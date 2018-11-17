@@ -1,10 +1,12 @@
 package net.rdd.config;
 
 import net.rdd.listener.TaskMessageListener;
+import net.rdd.util.SpringContextUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -32,7 +34,8 @@ public class TaskServiceConfig {
     private int redisDb;
 
 
-    @Bean("taskConnectionFactory")
+    @Bean
+//    @Primary
     public RedisConnectionFactory taskConnectionFactory() {
         JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
         connectionFactory.setPort(redisPort);
@@ -43,9 +46,26 @@ public class TaskServiceConfig {
     }
 
     @Bean("taskRedisTemplate")
-    public RedisTemplate taskRedisTemplate(@Qualifier(value = "taskConnectionFactory") RedisConnectionFactory factory) {
+    public RedisTemplate taskRedisTemplate() {
         RedisTemplate template = new StringRedisTemplate();
-        template.setConnectionFactory(factory);
+        template.setConnectionFactory(taskConnectionFactory());
+        return template;
+    }
+
+    @Bean
+    public RedisConnectionFactory rddConnectionFactory() {
+        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
+        connectionFactory.setPort(redisPort);
+        connectionFactory.setHostName(redisHost);
+        connectionFactory.setDatabase(3);
+        connectionFactory.setPassword(redisPass);
+        return connectionFactory;
+    }
+
+    @Bean("rddRedisTemplate")
+    public StringRedisTemplate rddRedisTemplate() {
+        StringRedisTemplate template = new StringRedisTemplate();
+        template.setConnectionFactory(rddConnectionFactory());
         return template;
     }
 

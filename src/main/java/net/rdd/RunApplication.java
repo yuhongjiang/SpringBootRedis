@@ -1,5 +1,6 @@
 package net.rdd;
 
+import net.rdd.util.SpringContextUtil;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +19,8 @@ public class RunApplication {
         //关闭
 //        springApplication.setBannerMode(Banner.Mode.OFF);
         springApplication.run(args);
+
+        System.out.println(3333);
 
     }
 

@@ -6,9 +6,9 @@ server:
 
 redis:
   task:
-    host: 127.0.0.1
+    host: 120.24.41.93
     port: 6379
-    pass: 87541092
+    pass: rdd123456
     db: 2
     config:
       maxTotal: 100
