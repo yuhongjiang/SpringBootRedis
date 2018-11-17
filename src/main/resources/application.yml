@@ -1,0 +1,16 @@
+server:
+  #端口号
+  port: 8899
+  #项目名，如果不设定，默认是 /
+#  context-path: /spring-boot-mail
+
+redis:
+  task:
+    host: 127.0.0.1
+    port: 6379
+    pass: 87541092
+    db: 2
+    config:
+      maxTotal: 100
+      maxIdle: 10
+      maxWaitMillis : 100000
