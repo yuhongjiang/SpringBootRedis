@@ -1,14 +1,15 @@
 package net.rdd.config;
 
-import net.rdd.listener.TaskMessageListener;
-import net.rdd.util.SpringContextUtil;
-import org.springframework.beans.factory.annotation.Qualifier;
+import net.rdd.listener.RddMessageListener;
+import net.rdd.listener.RedisMessageListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -19,7 +20,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.scripting.support.ResourceScriptSource;
 
 @Configuration
-public class TaskServiceConfig {
+public class RedisServiceConfig {
 
     @Value("${redis.task.host}")
     private String redisHost;
@@ -35,7 +36,7 @@ public class TaskServiceConfig {
 
 
     @Bean
-//    @Primary
+    @Primary
     public RedisConnectionFactory taskConnectionFactory() {
         JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
         connectionFactory.setPort(redisPort);
@@ -45,7 +46,7 @@ public class TaskServiceConfig {
         return connectionFactory;
     }
 
-    @Bean("taskRedisTemplate")
+    @Bean
     public RedisTemplate taskRedisTemplate() {
         RedisTemplate template = new StringRedisTemplate();
         template.setConnectionFactory(taskConnectionFactory());
@@ -54,18 +55,47 @@ public class TaskServiceConfig {
 
     @Bean
     public RedisConnectionFactory rddConnectionFactory() {
-        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
-        connectionFactory.setPort(redisPort);
-        connectionFactory.setHostName(redisHost);
-        connectionFactory.setDatabase(3);
-        connectionFactory.setPassword(redisPass);
-        return connectionFactory;
+        // 推荐使用
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setPort(redisPort);
+        redisStandaloneConfiguration.setHostName(redisHost);
+        redisStandaloneConfiguration.setDatabase(3);
+        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPass));
+        JedisConnectionFactory redisStandaloneConfigurationFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
+
+//        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
+//        connectionFactory.setPort(redisPort);
+//        connectionFactory.setHostName(redisHost);
+//        connectionFactory.setDatabase(3);
+//        connectionFactory.setPassword(redisPass);
+//
+        //todo something wrong
+        /**
+         * org.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+         */
+//        JedisShardInfo jedisShardInfo = new JedisShardInfo(redisHost,redisPort );
+//        jedisShardInfo.setConnectionTimeout(10000);
+//        jedisShardInfo.setSoTimeout(10000);
+//        jedisShardInfo.setPassword(redisPass);
+//        JedisConnectionFactory jedisShardInfoFactory = new JedisConnectionFactory(jedisShardInfo);
+
+        return redisStandaloneConfigurationFactory;
     }
 
     @Bean("rddRedisTemplate")
     public StringRedisTemplate rddRedisTemplate() {
         StringRedisTemplate template = new StringRedisTemplate();
         template.setConnectionFactory(rddConnectionFactory());
+
+//        RedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+//        RedisSerializer stringRedisSerializer = new StringRedisSerializer();
+//        // key 的序列化采用 StringRedisSerializer
+//        template.setKeySerializer(stringRedisSerializer);
+//        template.setHashKeySerializer(stringRedisSerializer);
+//        // value 值的序列化采用 GenericJackson2JsonRedisSerializer
+//        template.setValueSerializer(genericJackson2JsonRedisSerializer);
+//        template.setHashValueSerializer(genericJackson2JsonRedisSerializer);
+
         return template;
     }
 
@@ -86,10 +116,12 @@ public class TaskServiceConfig {
     }
 
     @Bean
-    RedisMessageListenerContainer keyExpirationListenerContainer(TaskMessageListener listener) {
+    //key过期监听,指定数据库
+    RedisMessageListenerContainer keyExpirationListenerContainer(RedisMessageListener listener, RddMessageListener rddListener) {
         RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
         listenerContainer.setConnectionFactory(taskConnectionFactory());
         listenerContainer.addMessageListener(listener, new PatternTopic("__keyevent@" + redisDb + "__:expired"));
+        listenerContainer.addMessageListener(rddListener, new PatternTopic("__keyevent@" + redisDb + "__:expired"));
         return listenerContainer;
     }
 

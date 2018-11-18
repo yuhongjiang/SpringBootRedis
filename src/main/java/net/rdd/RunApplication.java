@@ -12,16 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RunApplication {
 
     public static void main(String[] args) {
-
         SpringApplication springApplication = new SpringApplication(RunApplication.class);
-        //控制台打印
-        springApplication.setBannerMode(Banner.Mode.CONSOLE);
-        //关闭
-//        springApplication.setBannerMode(Banner.Mode.OFF);
         springApplication.run(args);
-
-        System.out.println(3333);
-
     }
 
 }
