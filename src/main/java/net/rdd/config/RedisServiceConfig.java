@@ -43,6 +43,21 @@ public class RedisServiceConfig {
         connectionFactory.setHostName(redisHost);
         connectionFactory.setDatabase(redisDb);
         connectionFactory.setPassword(redisPass);
+
+        //配置连接池属性
+        connectionFactory.setTimeout(Integer.parseInt(timeout));
+        connectionFactory.getPoolConfig().setMaxIdle(maxIdle);
+        connectionFactory.getPoolConfig().setMaxTotal(maxTotal);
+        connectionFactory.getPoolConfig().setMaxWaitMillis(maxWaitMillis);
+        connectionFactory.getPoolConfig().setMinEvictableIdleTimeMillis(
+                Integer.parseInt(minEvictableIdleTimeMillis));
+        connectionFactory.getPoolConfig()
+                .setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+        connectionFactory.getPoolConfig().setTimeBetweenEvictionRunsMillis(
+                Integer.parseInt(timeBetweenEvictionRunsMillis));
+        connectionFactory.getPoolConfig().setTestOnBorrow(testOnBorrow);
+        connectionFactory.getPoolConfig().setTestWhileIdle(testWhileIdle);
+
         return connectionFactory;
     }
 
