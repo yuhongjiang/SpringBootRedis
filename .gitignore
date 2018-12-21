@@ -32,3 +32,4 @@ $RECYCLE.BIN/
 out
 gen
 /src/test/java/net/rdd/test/redis/MainTest.java
+target/
