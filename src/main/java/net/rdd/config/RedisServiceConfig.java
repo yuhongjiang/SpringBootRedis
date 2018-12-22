@@ -34,6 +34,24 @@ public class RedisServiceConfig {
     @Value("${redis.task.db}")
     private int redisDb;
 
+    @Value("${redis.task.config.timeout}")
+    private String timeout;
+    @Value("${redis.task.config.maxTotal}")
+    private int maxTotal;
+    @Value("${redis.task.config.maxIdle}")
+    private int maxIdle;
+    @Value("${redis.task.config.maxWaitMillis}")
+    private int maxWaitMillis;
+    @Value("${redis.task.config.minEvictableIdleTimeMillis}")
+    private String minEvictableIdleTimeMillis;
+    @Value("${redis.task.config.numTestsPerEvictionRun}")
+    private int numTestsPerEvictionRun;
+    @Value("${redis.task.config.timeBetweenEvictionRunsMillis}")
+    private String timeBetweenEvictionRunsMillis;
+    @Value("${redis.task.config.testOnBorrow}")
+    private Boolean testOnBorrow;
+    @Value("${redis.task.config.testWhileIdle}")
+    private Boolean testWhileIdle;
 
     @Bean
     @Primary
@@ -43,6 +61,21 @@ public class RedisServiceConfig {
         connectionFactory.setHostName(redisHost);
         connectionFactory.setDatabase(redisDb);
         connectionFactory.setPassword(redisPass);
+
+        //配置连接池属性
+        connectionFactory.setTimeout(Integer.parseInt(timeout));
+        connectionFactory.getPoolConfig().setMaxIdle(maxIdle);
+        connectionFactory.getPoolConfig().setMaxTotal(maxTotal);
+        connectionFactory.getPoolConfig().setMaxWaitMillis(maxWaitMillis);
+        connectionFactory.getPoolConfig().setMinEvictableIdleTimeMillis(
+                Integer.parseInt(minEvictableIdleTimeMillis));
+        connectionFactory.getPoolConfig()
+                .setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+        connectionFactory.getPoolConfig().setTimeBetweenEvictionRunsMillis(
+                Integer.parseInt(timeBetweenEvictionRunsMillis));
+        connectionFactory.getPoolConfig().setTestOnBorrow(testOnBorrow);
+        connectionFactory.getPoolConfig().setTestWhileIdle(testWhileIdle);
+
         return connectionFactory;
     }
 
@@ -61,7 +94,10 @@ public class RedisServiceConfig {
         redisStandaloneConfiguration.setHostName(redisHost);
         redisStandaloneConfiguration.setDatabase(3);
         redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPass));
+
         JedisConnectionFactory redisStandaloneConfigurationFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
+        //同上
+//        redisStandaloneConfigurationFactory.getPoolConfig().setMaxIdle();
 
 //        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
 //        connectionFactory.setPort(redisPort);
@@ -116,7 +152,7 @@ public class RedisServiceConfig {
     }
 
     @Bean
-    //key过期监听,指定数据库
+        //key过期监听,指定数据库
     RedisMessageListenerContainer keyExpirationListenerContainer(RedisMessageListener listener, RddMessageListener rddListener) {
         RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
         listenerContainer.setConnectionFactory(taskConnectionFactory());
