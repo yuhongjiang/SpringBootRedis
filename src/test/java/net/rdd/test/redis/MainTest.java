@@ -22,6 +22,7 @@ public class MainTest {
                 "Andy Murray","Tomas Berdych",
                 "Juan Martin Del Potro"};
         List<String> players =  Arrays.asList(atp);
+        System.out.println();
 
 // 以前的循环方式
 //        for (String player : players) {
