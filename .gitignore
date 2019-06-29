@@ -34,3 +34,5 @@ gen
 /src/test/java/net/rdd/test/redis/MainTest.java
 target/
 /.idea/
+/src/test/
+/src/test/java/

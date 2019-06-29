@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 
 import javax.swing.*;
+import java.util.Set;
 
 /**
  * Created by rdd on 2018/12/18.
@@ -34,7 +35,7 @@ public class RedisScriptTest extends MainTest {
 
     @Test
     public void test01() {
-
+        Set keys = taskRedisTemplate.keys("*");
         String sss = SpringContextUtil.getBean(RedisLockScriptUtil.class).tryLock("aaaa");
 
         if (Strings.isNullOrEmpty(sss)) {

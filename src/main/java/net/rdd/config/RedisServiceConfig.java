@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -86,54 +84,54 @@ public class RedisServiceConfig {
         return template;
     }
 
-    @Bean
-    public RedisConnectionFactory rddConnectionFactory() {
-        // 推荐使用
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setPort(redisPort);
-        redisStandaloneConfiguration.setHostName(redisHost);
-        redisStandaloneConfiguration.setDatabase(3);
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPass));
-
-        JedisConnectionFactory redisStandaloneConfigurationFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
-        //同上
-//        redisStandaloneConfigurationFactory.getPoolConfig().setMaxIdle();
-
-//        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
-//        connectionFactory.setPort(redisPort);
-//        connectionFactory.setHostName(redisHost);
-//        connectionFactory.setDatabase(3);
-//        connectionFactory.setPassword(redisPass);
+//    @Bean
+//    public RedisConnectionFactory rddConnectionFactory() {
+//        // 推荐使用
+//        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+//        redisStandaloneConfiguration.setPort(redisPort);
+//        redisStandaloneConfiguration.setHostName(redisHost);
+//        redisStandaloneConfiguration.setDatabase(3);
+//        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPass));
 //
-        //todo something wrong
-        /**
-         * org.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
-         */
-//        JedisShardInfo jedisShardInfo = new JedisShardInfo(redisHost,redisPort );
-//        jedisShardInfo.setConnectionTimeout(10000);
-//        jedisShardInfo.setSoTimeout(10000);
-//        jedisShardInfo.setPassword(redisPass);
-//        JedisConnectionFactory jedisShardInfoFactory = new JedisConnectionFactory(jedisShardInfo);
+//        JedisConnectionFactory redisStandaloneConfigurationFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
+//        //同上
+////        redisStandaloneConfigurationFactory.getPoolConfig().setMaxIdle();
+//
+////        JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
+////        connectionFactory.setPort(redisPort);
+////        connectionFactory.setHostName(redisHost);
+////        connectionFactory.setDatabase(3);
+////        connectionFactory.setPassword(redisPass);
+////
+//        //todo something wrong
+//        /**
+//         * org.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+//         */
+////        JedisShardInfo jedisShardInfo = new JedisShardInfo(redisHost,redisPort );
+////        jedisShardInfo.setConnectionTimeout(10000);
+////        jedisShardInfo.setSoTimeout(10000);
+////        jedisShardInfo.setPassword(redisPass);
+////        JedisConnectionFactory jedisShardInfoFactory = new JedisConnectionFactory(jedisShardInfo);
+//
+//        return redisStandaloneConfigurationFactory;
+//    }
 
-        return redisStandaloneConfigurationFactory;
-    }
-
-    @Bean("rddRedisTemplate")
-    public StringRedisTemplate rddRedisTemplate() {
-        StringRedisTemplate template = new StringRedisTemplate();
-        template.setConnectionFactory(rddConnectionFactory());
-
-//        RedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
-//        RedisSerializer stringRedisSerializer = new StringRedisSerializer();
-//        // key 的序列化采用 StringRedisSerializer
-//        template.setKeySerializer(stringRedisSerializer);
-//        template.setHashKeySerializer(stringRedisSerializer);
-//        // value 值的序列化采用 GenericJackson2JsonRedisSerializer
-//        template.setValueSerializer(genericJackson2JsonRedisSerializer);
-//        template.setHashValueSerializer(genericJackson2JsonRedisSerializer);
-
-        return template;
-    }
+//    @Bean("rddRedisTemplate")
+//    public StringRedisTemplate rddRedisTemplate() {
+//        StringRedisTemplate template = new StringRedisTemplate();
+//        template.setConnectionFactory(rddConnectionFactory());
+//
+////        RedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+////        RedisSerializer stringRedisSerializer = new StringRedisSerializer();
+////        // key 的序列化采用 StringRedisSerializer
+////        template.setKeySerializer(stringRedisSerializer);
+////        template.setHashKeySerializer(stringRedisSerializer);
+////        // value 值的序列化采用 GenericJackson2JsonRedisSerializer
+////        template.setValueSerializer(genericJackson2JsonRedisSerializer);
+////        template.setHashValueSerializer(genericJackson2JsonRedisSerializer);
+//
+//        return template;
+//    }
 
     @Bean
     public RedisScript<Boolean> lockScript() {
@@ -153,11 +151,11 @@ public class RedisServiceConfig {
 
     @Bean
         //key过期监听,指定数据库
-    RedisMessageListenerContainer keyExpirationListenerContainer(RedisMessageListener listener, RddMessageListener rddListener) {
+    public RedisMessageListenerContainer keyExpirationListenerContainer(RedisMessageListener listener, RddMessageListener rddListener) {
         RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
         listenerContainer.setConnectionFactory(taskConnectionFactory());
         listenerContainer.addMessageListener(listener, new PatternTopic("__keyevent@" + redisDb + "__:expired"));
-        listenerContainer.addMessageListener(rddListener, new PatternTopic("__keyevent@" + redisDb + "__:expired"));
+//        listenerContainer.addMessageListener(rddListener, new PatternTopic("__keyevent@" + redisDb + "__:expired"));
         return listenerContainer;
     }
 

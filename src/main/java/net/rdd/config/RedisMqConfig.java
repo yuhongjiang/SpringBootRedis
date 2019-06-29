@@ -2,20 +2,16 @@ package net.rdd.config;
 
 import net.rdd.listener.RddMessageListener;
 import net.rdd.mq.MessageReceiver;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import org.springframework.stereotype.Controller;
 
 /**
  * Created by 东东 on 2018/11/18.
  */
-@Configuration
+//@Configuration
 public class RedisMqConfig {
 
     /**

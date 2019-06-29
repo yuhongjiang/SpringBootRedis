@@ -4,14 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RedisMessageListener extends MessageListenerAdapter {
-//public class RedisMessageListener implements MessageListener {
+//public class RedisMessageListener extends MessageListenerAdapter {
+public class RedisMessageListener implements MessageListener {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
