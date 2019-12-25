@@ -16,7 +16,7 @@ redis:
 #      控制一个pool可分配多少个jedis实例
       maxTotal: 100
 #      最大空闲数
-      maxIdle: 10
+      maxIdle: 20
 #      最大等待时间
       maxWaitMillis: 100000
 #      连接的最小空闲时间 默认1800000毫秒(30分钟)
